@@ -3,6 +3,9 @@ package br.ce.orlando;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
+
+import java.util.Arrays;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
@@ -87,5 +90,20 @@ public class UserJsonTest {
 			.statusCode(404)
 			.body("error", is("Usuário inexistente"))
 		;
+	}
+	
+	@Test
+	public void deveVerificarListaRaiz() {
+		given()
+		.when()
+			.get("https://restapi.wcaquino.me/users")
+		.then()
+			.statusCode(200)
+			.body("$", hasSize(3)) // $ é nome da lista, como não tem se usa $ ou deixa em branco
+			.body("name", hasItems("João da Silva", "Maria Joaquina", "Ana Júlia"))
+			.body("age[1]", is(25))
+			.body("filhos.name", hasItem(Arrays.asList("Zezinho", "Luizinho")))
+			.body("salary", contains(1234.5678f, 2500, null))
+			;
 	}
 }
