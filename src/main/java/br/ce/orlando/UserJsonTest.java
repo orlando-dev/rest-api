@@ -2,7 +2,8 @@ package br.ce.orlando;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -56,5 +57,23 @@ public class UserJsonTest {
 			.body("id", is(2))
 			.body("name", containsString("Joaquina"))
 			.body("endereco.rua", is("Rua dos bobos"));
+	}
+	
+	@Test
+	public void deveVerificarLista() {
+		RestAssured.given()
+		.when()
+			.get("https://restapi.wcaquino.me/users/3")
+		.then()
+			.statusCode(200)
+			.body("id", is(3))
+			.body("name", containsString("Ana"))
+			.body("filhos", hasSize(2))
+			.body("filhos[0].name", is("Zezinho"))
+			.body("filhos[1].name", is("Luizinho"))
+			.body("filhos.name", hasItem("Luizinho"))
+			.body("filhos.name", hasItems("Luizinho", "Luizinho"))
+			
+			;
 	}
 }
