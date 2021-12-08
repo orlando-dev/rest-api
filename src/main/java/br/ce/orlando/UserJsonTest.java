@@ -3,6 +3,7 @@ package br.ce.orlando;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
+import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 import org.junit.Assert;
@@ -75,5 +76,16 @@ public class UserJsonTest {
 			.body("filhos.name", hasItems("Luizinho", "Luizinho"))
 			
 			;
+	}
+	
+	@Test
+	public void deveRetornarErroUsuarioInexistente() {
+		given()
+		.when()
+			.get("https://restapi.wcaquino.me/users/4")
+		.then()
+			.statusCode(404)
+			.body("error", is("Usuário inexistente"))
+		;
 	}
 }
