@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static io.restassured.RestAssured.given;
@@ -133,5 +134,22 @@ public class UserJsonTest {
 			.body("salary.findAll{it != null}.sum()", is(closeTo(3734.5678f, 0.001)))
 			;
 		
+	}
+	
+	
+	@Test
+	public void devoUnirJsonPathComJAVA() {
+		ArrayList<String> names = 
+		given()
+		.when()
+			.get("https://restapi.wcaquino.me/users")
+		.then()
+			.statusCode(200)
+			.extract().path("name.findAll{it.startsWith('Maria')}")
+			;
+		
+		Assert.assertEquals(1, names.size());
+		Assert.assertTrue(names.get(0).equalsIgnoreCase("Maria JoaQuina"));
+		Assert.assertEquals(names.get(0).toUpperCase(), "maria joaquina".toUpperCase());
 	}
 }
