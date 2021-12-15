@@ -21,28 +21,47 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.filter.log.LogDetail;
 import io.restassured.http.Method;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
 
 public class UserJsonTest {
+	
+	public static RequestSpecification reqSpecification;
+	public static ResponseSpecification resSpecification;
+	
 	
 	@BeforeClass
 	public static void setUp() {
 		RestAssured.baseURI = "http://restapi.wcaquino.me";
 //		RestAssured.port = 80;
 //		RestAssured.basePath = "";
+		RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
+		reqBuilder.log(LogDetail.ALL);
+		reqSpecification = reqBuilder.build();
+		
+		ResponseSpecBuilder resBuilder = new ResponseSpecBuilder();
+		resBuilder.expectStatusCode(200);
+		resSpecification = resBuilder.build();
+		
 	}
 	
 	@Test
 	public void deveVerificarPrimeiroNivel() {
+	
 		
 		given()
-			.log().all()
+			.spec(reqSpecification)
 		.when()
 			.get("/users/1")
 		.then()
-			.statusCode(200)
+			.spec(resSpecification)
+//			.statusCode(200)
 			.log().all()
 			.body("id", is(1))
 			.body("name", containsString("Silva"))
@@ -75,7 +94,7 @@ public class UserJsonTest {
 		.when()
 			.get("/users/2")
 		.then()
-			.statusCode(200)
+//			.statusCode(200)
 			.body("id", is(2))
 			.body("name", containsString("Joaquina"))
 			.body("endereco.rua", is("Rua dos bobos"));
