@@ -1,17 +1,23 @@
 package br.ce.orlando;
 
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.arrayContaining;
+import static org.hamcrest.Matchers.arrayWithSize;
+import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
-
-import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.restassured.RestAssured;
@@ -21,22 +27,32 @@ import io.restassured.response.Response;
 
 public class UserJsonTest {
 	
+	@BeforeClass
+	public static void setUp() {
+		RestAssured.baseURI = "http://restapi.wcaquino.me";
+//		RestAssured.port = 80;
+//		RestAssured.basePath = "";
+	}
+	
 	@Test
 	public void deveVerificarPrimeiroNivel() {
 		
-		RestAssured.given()
+		given()
+			.log().all()
 		.when()
-			.get("https://restapi.wcaquino.me/users/1")
+			.get("/users/1")
 		.then()
 			.statusCode(200)
+			.log().all()
 			.body("id", is(1))
 			.body("name", containsString("Silva"))
-			.body("age", greaterThan(18));
+			.body("age", greaterThan(18))
+			;
 	}
 	
 	@Test
 	public void deveVerificarPrimeiroNivelOutrasFormas() {
-		Response response = RestAssured.request(Method.GET, "https://restapi.wcaquino.me/users/1");
+		Response response = RestAssured.request(Method.GET, "/users/1");
 		
 		//path
 		Assert.assertEquals(new Integer(1), response.path("id"));
@@ -57,7 +73,7 @@ public class UserJsonTest {
 		
 		RestAssured.given()
 		.when()
-			.get("https://restapi.wcaquino.me/users/2")
+			.get("/users/2")
 		.then()
 			.statusCode(200)
 			.body("id", is(2))
@@ -69,7 +85,7 @@ public class UserJsonTest {
 	public void deveVerificarLista() {
 		RestAssured.given()
 		.when()
-			.get("https://restapi.wcaquino.me/users/3")
+			.get("/users/3")
 		.then()
 			.statusCode(200)
 			.body("id", is(3))
@@ -87,7 +103,7 @@ public class UserJsonTest {
 	public void deveRetornarErroUsuarioInexistente() {
 		given()
 		.when()
-			.get("https://restapi.wcaquino.me/users/4")
+			.get("/users/4")
 		.then()
 			.statusCode(404)
 			.body("error", is("Usuário inexistente"))
@@ -98,7 +114,7 @@ public class UserJsonTest {
 	public void deveVerificarListaRaiz() {
 		given()
 		.when()
-			.get("https://restapi.wcaquino.me/users")
+			.get("/users")
 		.then()
 			.statusCode(200)
 			.body("$", hasSize(3)) // $ é nome da lista, como não tem se usa $ ou deixa em branco
@@ -113,7 +129,7 @@ public class UserJsonTest {
 	public void devoFazerVerificacoesAvancadas() {
 		given()
 		.when()
-			.get("https://restapi.wcaquino.me/users")
+			.get("/users")
 		.then()
 			.statusCode(200)
 			.body("$", hasSize(3))
@@ -142,7 +158,7 @@ public class UserJsonTest {
 		ArrayList<String> names = 
 		given()
 		.when()
-			.get("https://restapi.wcaquino.me/users")
+			.get("/users")
 		.then()
 			.statusCode(200)
 			.extract().path("name.findAll{it.startsWith('Maria')}")
