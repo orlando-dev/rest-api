@@ -3,6 +3,10 @@ package br.ce.orlando;
 import static io.restassured.RestAssured.given;
 
 import static org.hamcrest.Matchers.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Test;
 
 import io.restassured.http.ContentType;
@@ -24,6 +28,28 @@ public class VerbosTest {
 			.body("id", is(notNullValue()))
 			.body("name", is("Orlando"))
 			.body("age", is(190))
+		;
+		
+	}
+	
+	@Test
+	public void deveSalvarUsuarioUsandoMap() {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("name", "Orlando via map");
+		params.put("age", 689);
+		
+		given()
+			.log().all()
+			.contentType("application/json")
+			.body(params)
+		.when()
+			.post("https://restapi.wcaquino.me/users")
+		.then()
+			.log().all()
+			.statusCode(201)
+			.body("id", is(notNullValue()))
+			.body("name", is("Orlando via map"))
+			.body("age", is(689))
 		;
 		
 	}
