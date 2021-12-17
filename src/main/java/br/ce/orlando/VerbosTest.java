@@ -55,6 +55,26 @@ public class VerbosTest {
 	}
 	
 	@Test
+	public void deveSalvarUsuarioUsandoObjeto() {
+		User user = new User("Usuario Orlando via objeto", 850);
+		
+		given()
+			.log().all()
+			.contentType("application/json")
+			.body(user)
+		.when()
+			.post("https://restapi.wcaquino.me/users")
+		.then()
+			.log().all()
+			.statusCode(201)
+			.body("id", is(notNullValue()))
+			.body("name", is("Usuario Orlando via objeto"))
+			.body("age", is(850))
+		;
+		
+	}
+	
+	@Test
 	public void naoDeveSalvarUsuario() {
 		given()
 			.log().all()
