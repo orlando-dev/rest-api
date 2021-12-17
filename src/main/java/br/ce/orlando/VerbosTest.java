@@ -100,4 +100,50 @@ public class VerbosTest {
 		;
 		
 	}
+	
+	@Test
+	public void devoCustomizarURLParte2() {
+		given()
+			.log().all()
+			.contentType("application/json")
+			.body("{\"name\": \"Usuario alterado\", \"age\": 195}")
+			.pathParam("entidade", "users")
+			.pathParam("userId", 1)
+		.when()
+			.put("https://restapi.wcaquino.me/{entidade}/{userId}", "users", "1")
+		.then()
+			.log().all()
+			.statusCode(200)
+			.body("id", is(1))
+			.body("name", is("Usuario alterado"))
+			.body("age", is(195))
+			.body("salary", is(1234.5678f))
+		;
+		
+	}
+	
+	@Test
+	public void deveRemoverUsuario() {
+		given()
+			.log().all()
+		.when()
+			.delete("https://restapi.wcaquino.me/users/1")
+		.then()
+			.log().all()
+			.statusCode(204)
+		;
+	}
+	
+	@Test
+	public void naoDeveRemoverUsuarioInexistente() {
+		given()
+			.log().all()
+		.when()
+			.delete("https://restapi.wcaquino.me/users/1000")
+		.then()
+			.log().all()
+			.statusCode(400)
+			.body("error", is("Registro inexistente"))
+		;
+	}
 }
