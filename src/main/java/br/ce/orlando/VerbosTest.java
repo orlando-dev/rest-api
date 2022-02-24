@@ -1,12 +1,14 @@
 package br.ce.orlando;
 
 import static io.restassured.RestAssured.given;
-
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -234,5 +236,27 @@ public class VerbosTest {
 			.body("user.@id", is(notNullValue()))
 			.body("user.name", is("Usuario Orlando XML"))
 			.body("user.age", is("40"));
+	}
+	
+	@Test
+	public void deveDeserializarXMLAoSalvarUsuario() {
+		User user = new User("Usuario Orlando XML", 40);
+		
+		User usuarioOrlandoDevInserido = given()
+			.log().all()
+			.contentType(ContentType.XML)
+			.body(user)
+		.when()
+			.post("https://restapi.wcaquino.me/usersXML")
+		.then()
+			.log().all()
+			.statusCode(201)
+			.extract().body().as(User.class)
+		;
+			
+		Assert.assertThat(usuarioOrlandoDevInserido.getId(),  Matchers.notNullValue());
+		Assert.assertThat(usuarioOrlandoDevInserido.getName(), Matchers.is("Usuario Orlando XML"));
+		Assert.assertThat(usuarioOrlandoDevInserido.getAge(), Matchers.is(40));
+		Assert.assertThat(usuarioOrlandoDevInserido.getSalary(), Matchers.nullValue());
 	}
 }
