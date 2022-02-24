@@ -217,4 +217,22 @@ public class VerbosTest {
 			.body("error", is("Registro inexistente"))
 		;
 	}
+	
+	@Test
+	public void deveSalvarUsurarioViaXMLUsandoObjeto() {
+		User user = new User("Usuario Orlando XML", 40);
+		
+				given()
+			.log().all()
+			.contentType(ContentType.XML)
+			.body(user)
+		.when()
+			.post("https://restapi.wcaquino.me/usersXML")
+		.then()
+			.log().all()
+			.statusCode(201)
+			.body("user.@id", is(notNullValue()))
+			.body("user.name", is("Usuario Orlando XML"))
+			.body("user.age", is("40"));
+	}
 }
