@@ -39,4 +39,19 @@ public class EnvioDadosTest {
 			.contentType(Matchers.containsString("utf-8"))
 		;
 	}
+	
+	@Test
+	public void deveEnviarValorViaHeader() {
+		
+		given()
+			.log().all()
+			.accept(ContentType.XML)
+		.when()
+			.get("https://restapi.wcaquino.me/v2/users")
+		.then()
+			.log().all()
+			.statusCode(200)
+			.contentType(ContentType.XML)
+		;
+	}
 }
