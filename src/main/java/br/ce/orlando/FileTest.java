@@ -37,4 +37,18 @@ public class FileTest {
 			.body("size", Matchers.is(59857))
 		;
 	}
+	
+	@Test
+	public void naoDeveFazerUploadArquivoGrande() {
+		given()
+			.log().all()
+			.multiPart("arquivo", new File("src/main/resources/CTAppium_1_2.apk"))
+		.when()
+			.post("http://restapi.wcaquino.me/upload")
+		.then()
+			.log().all()
+			.time(Matchers.lessThan(900L))
+			.statusCode(413)
+		;
+	}
 }
