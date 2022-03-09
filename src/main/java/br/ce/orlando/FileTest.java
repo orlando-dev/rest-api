@@ -3,8 +3,12 @@ package br.ce.orlando;
 import static io.restassured.RestAssured.given;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class FileTest {
@@ -51,4 +55,27 @@ public class FileTest {
 			.statusCode(413)
 		;
 	}
+	
+	@Test
+	public void deveBaixarArquivo() throws IOException {
+		byte[] image = given()
+			.log().all()
+		.when()
+			.get("http://restapi.wcaquino.me/download")
+		.then()
+//			.log().all()
+			.statusCode(200)
+			.extract().asByteArray();
+		
+		File imagem = new File("src/main/resources/filme.jpg");
+		OutputStream out = new FileOutputStream(imagem);
+		out.write(image);
+		out.close();
+		
+		System.out.println(imagem.length());
+		
+		Assert.assertThat(imagem.length(), Matchers.lessThan(100000L));
+	}
+	
+	
 }
