@@ -19,4 +19,27 @@ public class AuthTest {
 			.body("name", Matchers.is("Luke Skywalker"))
 		;
 	}
+	
+	
+	/**
+	 * Usei essa endpoint para a requisição do teste abaixo
+	 *https://api.openweathermap.org/data/2.5/weather?q=Fortaleza,BR&appid=18fdd7513e8a8ddcbba2631eaf1c9373&units=metric
+	 */
+	@Test
+	public void deveObterClima() {
+		given()
+			.log().all()
+			.queryParam("q", "Fortaleza,BR")
+			.queryParam("appid", "18fdd7513e8a8ddcbba2631eaf1c9373")
+			.queryParam("units", "metric")
+		.when()
+			.get("https://api.openweathermap.org/data/2.5/weather")
+		.then()
+			.log().all()
+			.statusCode(200)
+			.body("name", Matchers.is("Fortaleza"))
+			.body("coord.lon", Matchers.is(-38.5247f))
+			.body("main.temp", Matchers.greaterThan(25f))
+	;
+	}
 }
