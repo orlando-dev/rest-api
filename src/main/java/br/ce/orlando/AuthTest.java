@@ -9,6 +9,8 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import io.restassured.http.ContentType;
+import io.restassured.path.xml.XmlPath;
+import io.restassured.path.xml.XmlPath.CompatibilityMode;
 
 public class AuthTest {
 	
@@ -132,5 +134,44 @@ public class AuthTest {
 			.statusCode(200)
 			.body("nome", Matchers.hasItem("Conta de teste"))
 		;
+	}
+	
+	@Test
+	public void deveAcessarAplicacaoWeb() {
+		
+		String cookie = given()
+			.log().all()
+			.formParam("email", "orlando.dev@hotmail.com")
+			.formParam("senha", "1234")
+			.contentType(ContentType.URLENC.withCharset("UTF-8"))
+		.when()
+			.post("https://seubarriga.wcaquino.me/logar")
+		.then()
+			.log().all()
+			.statusCode(200)
+			.extract().header("set-cookie")
+		;
+		
+		cookie = cookie.split("=")[1].split(";")[0];
+		System.out.println(cookie);
+//		Cookkie obtido durante os teste
+//		connect.sid=s%3AX3Dglo45FMGhPLZGnLaD7o6sYqKCcrj3.tyTjQ%2F5Z0ZRIpJX6zeabKY1U9PfWvVmw0YZobWRc9gA; Path=/;
+
+		//obter conta 
+		String body = given()
+			.log().all()
+			.cookie("connect.sid", cookie)
+		.when()
+			.get("https://seubarriga.wcaquino.me/contas")
+		.then()
+			.log().all()
+			.statusCode(200)
+			.body("html.body.table.tbody.tr[0].td[0]", Matchers.is("Conta de teste"))
+			.extract().body().asString();
+		;
+		
+		System.out.println("Extraindo......");
+		XmlPath xmlPath = new XmlPath(CompatibilityMode.HTML, body);
+		System.out.println(xmlPath.getString("html.body.table.tbody.tr[0].td[0]"));
 	}
 }
